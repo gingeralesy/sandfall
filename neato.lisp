@@ -1,6 +1,12 @@
 (in-package #:neato)
 (in-readtable :qtools)
 
+;; TODO: make the world a series of arrays loaded with 64-bit variables
+;;       each variable would represent an area, like the updated array
+;;       then each type of a particle, water, sand, etc. would have their own array
+;;       and these could then be combined with LOGIOR to see if the tile is taken
+;;       it'd also take away the need to make the empty tiles part of the iteration
+;;       writing an iterator for Shinmera's FOR would help a bunch as well
 (defclass neato (paintable)
   ((world :initform (make-array '(1920 1080)
                                 :initial-element 0
