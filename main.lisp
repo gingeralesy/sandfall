@@ -18,7 +18,6 @@
    (input :initform (make-instance 'input-handler) :accessor input)))
 
 (define-subwidget (main updater) (q+:make-qtimer main))
-(define-subwidget (main background) (q+:make-qcolor 0 0 0))
 
 (define-initializer (main setup)
   (setf *main* main
@@ -43,7 +42,7 @@
 (define-override (main paint-event) (ev)
   (with-simple-restart (abort "Abort drawing and continue.")
     (with-finalizing ((painter (q+:make-qpainter main))
-                      (bgbrush (q+:make-qbrush background)))
+                      (bgbrush (q+:make-qbrush (q+:qt.black))))
       (setf (q+:style (q+:background painter)) (q+:qt.solid-pattern)
             (q+:color (q+:background painter)) (q+:qt.black)
             (q+:style (q+:brush painter)) (q+:qt.solid-pattern))

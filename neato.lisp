@@ -65,8 +65,8 @@
       (dotimes (y height)
         (let ((element (aref world x y)))
           (when (< 0 element)
-            (case element
-              (1 (q+:set-pen target (q+:qt.blue)))
-              (2 (q+:set-pen target (q+:qt.yellow)))
-              (T (q+:set-pen target (q+:qt.white))))
+            (setf (q+:pen target) (case element
+                                    (1 (q+:qt.blue))
+                                    (2 (q+:qt.yellow))
+                                    (T (q+:qt.white))))
             (q+:draw-point target x y)))))))
