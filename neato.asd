@@ -3,9 +3,11 @@
   :author "Janne Pakarinen <gingeralesy@gmail.com>"
   :description "For experimenting with all the things."
   :components ((:file "package")
+               (:file "input")
                (:file "main")
                (:file "neato"))
   :depends-on (:verbose
                :qtools
                :qtcore
-               :qtgui))
+               :qtgui
+               :for))

@@ -14,7 +14,8 @@
 (defgeneric paint (paintable target))
 
 (define-widget main (QWidget)
-  ((objects :initform NIL :accessor objects)))
+  ((objects :initform NIL :accessor objects)
+   (input :initform (make-instance 'input-handler) :accessor input)))
 
 (define-subwidget (main updater) (q+:make-qtimer main))
 (define-subwidget (main background) (q+:make-qcolor 0 0 0))
@@ -49,6 +50,23 @@
       (q+:fill-rect painter (q+:rect main) bgbrush)
       (loop for obj in (objects main) do
             (paint obj painter)))))
+
+(define-override (main mouse-press-event) (ev)
+  (let ((button (case (q+:button ev)
+                  ((q+:qt.left-button) :left)
+                  ((q+:qt.mid-button) :mid)
+                  ((q+:qt.right-button) :right))))
+    (mouse-event (input main) 'press (q+:x ev) (q+:y ev) button)))
+
+(define-override (main mouse-release-event) (ev)
+  (let ((button (case (q+:button ev)
+                  ((q+:qt.left-button) :left)
+                  ((q+:qt.mid-button) :mid)
+                  ((q+:qt.right-button) :right))))
+    (mouse-event (input main) 'release (q+:x ev) (q+:y ev) button)))
+
+(define-override (main mouse-move-event) (ev)
+  (mouse-event (input main) 'move (q+:x ev) (q+:y ev) NIL))
 
 (defun internal-time-millis ()
   (/ (get-internal-real-time)

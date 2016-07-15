@@ -11,9 +11,18 @@
   ((world :initform (make-array '(1920 1080)
                                 :initial-element 0
                                 :element-type '(unsigned-byte 8))
-          :accessor world)))
+          :accessor world)
+   (tick :initform 0 :accessor tick)))
 
 (defmethod update ((neato neato))
+  (when (mod (tick neato) 20)
+    (let* ((input (input *main*))
+           (mouse (mouse input))
+           (x (x mouse))
+           (y (y mouse))
+           (world (world neato)))
+      (when (and x y (= 0 (aref world x y)))
+        (setf (aref world x y) 1))))
   (let* ((world (world neato))
          (width (first (array-dimensions world)))
          (height (second (array-dimensions world)))
@@ -42,11 +51,11 @@
                             ((and below-right (< 0 below-right)) (1+ x)))))
               (when x1
                 (setf (aref world x y) 0
-                      (aref world x1 y1) element))
-              (let* ((index (floor (/ (* x1 y1) 64)))
-                     (update-block (aref updated index)))
-                (setf update-block (logior (ash update-block 1) (if x1 1 0))
-                      (aref updated index) update-block)))))))))
+                      (aref world x1 y1) element)
+                (let* ((index (floor (/ (* x1 y1) 64)))
+                       (update-block (aref updated index)))
+                  (setf update-block (logior (ash update-block 1) (if x1 1 0))
+                        (aref updated index) update-block))))))))))
 
 (defmethod paint ((neato neato) target)
   (let* ((world (world neato))
@@ -60,4 +69,4 @@
               (1 (q+:set-pen target (q+:qt.blue)))
               (2 (q+:set-pen target (q+:qt.yellow)))
               (T (q+:set-pen target (q+:qt.white))))
-            (q+:draw-point x y)))))))
+            (q+:draw-point target x y)))))))
