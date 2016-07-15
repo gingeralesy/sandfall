@@ -13,15 +13,13 @@
   ((mouse :initform (make-instance 'mouse) :accessor mouse)))
 
 (defmethod mouse-event ((input input-handler) event-type x y button)
-  (let ((mouse (mouse input))
-        (mouse-button (case button
-                        (:left (left mouse))
-                        (:mid (mid mouse))
-                        (:right (right mouse)))))
+  (let ((mouse (mouse input)))
     (setf (x mouse) x
           (y mouse) y)
-    (when mouse-button
-      (setf mouse-button (eql event-type 'press)))))
+    (case button
+      (:left (setf (left mouse) (eql event-type 'press)))
+      (:mid (setf (mid mouse) (eql event-type 'press)))
+      (:right (setf (right mouse) (eql event-type 'press))))))
 
 (defmethod keyboard-event ((input input-handler) event-type key)
   (when key
