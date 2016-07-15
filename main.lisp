@@ -58,7 +58,7 @@
     (mouse-event (input main) 'press (q+:x ev) (q+:y ev) button)))
 
 (define-override (main mouse-release-event) (ev)
-  (let ((button (case (q+:button ev)
+  (let ((button (qtools:qtenumcase (q+:button ev)
                   ((q+:qt.left-button) :left)
                   ((q+:qt.mid-button) :mid)
                   ((q+:qt.right-button) :right))))
