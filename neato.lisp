@@ -23,7 +23,8 @@
   (setf (getf (colors neato) :transparent) (q+:make-qcolor 0 0 0 0)
         (getf (colors neato) :blue) (q+:make-qcolor 0 0 255 255)
         (getf (colors neato) :orange) (q+:make-qcolor 255 175 100 255)
-        (getf (colors neato) :white) (q+:make-qcolor 255 255 255 255)))
+        (getf (colors neato) :white) (q+:make-qcolor 255 255 255 255)
+        (getf (colors neato) :black) (q+:make-qcolor 0 0 0 255)))
 
 (defmethod finalize ((neato neato))
   (finalize (image-buffer neato))
@@ -86,13 +87,14 @@
                      (q+:width rect)))
          (height (min (second (array-dimensions world))
                       (q+:height rect))))
+    (q+:fill (image-buffer neato) (getf (colors neato) :white))
     (q+:fill (image-buffer neato) (getf (colors neato) :transparent))
     (dotimes (x width)
       (dotimes (y height)
         (let ((element (aref world x y)))
           (when (and element (< 0 element))
-            (setf (q+:pixel (image-buffer neato) x y) (q+:rgb (case element
-                                                                (1 (getf (colors neato) :blue))
-                                                                (2 (getf (colors neato) :orange))
-                                                                (T (getf (colors neato) :white)))))))))
+            (setf (q+:pixel (image-buffer neato) x y) (q+:rgba (case element
+                                                                 (1 (getf (colors neato) :blue))
+                                                                 (2 (getf (colors neato) :orange))
+                                                                 (T (getf (colors neato) :white)))))))))
     (q+:draw-image target rect (image-buffer neato))))
