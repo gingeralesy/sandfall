@@ -63,7 +63,6 @@
                           (aref updated index) update-block)))))))))))
 
 (defmethod paint ((neato neato) target)
-  (incf *test*)
   (let* ((world (world neato))
          (rect (q+:rect *main*))
          (width (min (first (array-dimensions world))
