@@ -89,4 +89,4 @@
                            (2 #xFFFFFF00)    ;; Yellow
                            (T #xFFFFFFFF)))) ;; White
               (setf (q+:pixel (image-buffer neato) x y) color))))))
-    (q+:draw-image target 0 0 (image-buffer neato))))
+    (q+:draw-image target 0 0 (image-buffer neato) 0 0 width height)))
