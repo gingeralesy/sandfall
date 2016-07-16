@@ -28,6 +28,8 @@
 
 (define-finalizer (main teardown)
   (v:info :neato.main "EXIT")
+  (for:for ((obj in (objects main)))
+    (finalize obj))
   (setf *main* NIL))
 
 (define-slot (main tick) ()
