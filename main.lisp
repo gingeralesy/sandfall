@@ -33,8 +33,9 @@
 (define-slot (main tick) ()
   (declare (connected updater (timeout)))
   (let ((start (internal-time-millis)))
-    (loop for obj in (objects main) do
-          (update obj))
+    (with-simple-restart (abort "Abort update and move to drawing.")
+      (for:for ((obj in (objects main)))
+        (update obj)))
     (q+:repaint main)
     (q+:start updater (floor (max 0 (- (/ 1000 30)
                                        (- start (internal-time-millis))))))))
@@ -43,12 +44,10 @@
   (with-simple-restart (abort "Abort drawing and continue.")
     (with-finalizing ((painter (q+:make-qpainter main))
                       (bgbrush (q+:make-qbrush (q+:qt.black))))
-      (setf (q+:style (q+:background painter)) (q+:qt.solid-pattern)
-            (q+:color (q+:background painter)) (q+:qt.black)
-            (q+:style (q+:brush painter)) (q+:qt.solid-pattern))
+      (setf (q+:style bgbrush) (q+:qt.solid-pattern))
       (q+:fill-rect painter (q+:rect main) bgbrush)
-      (loop for obj in (objects main) do
-            (paint obj painter)))))
+      (for:for ((obj in (objects main)))
+        (paint obj painter)))))
 
 (define-override (main mouse-press-event) (ev)
   (let ((button (qtools:qtenumcase (q+:button ev)
