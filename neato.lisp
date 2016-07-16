@@ -13,24 +13,15 @@
                                 :element-type '(unsigned-byte 8))
           :accessor world)
    (tick :initform 0 :accessor tick)
-   (colors :initform NIL :accessor colors)
    (image-buffer :initform NIL :accessor image-buffer)))
 
 (defmethod initialize-instance :after ((neato neato) &key)
   (let ((width (first (array-dimensions (world neato))))
         (height (second (array-dimensions (world neato)))))
-    (setf (image-buffer neato) (q+:make-qimage width height (q+:qimage.format_argb32))))
-  (setf (getf (colors neato) :transparent) (q+:make-qcolor 0 0 0 0)
-        (getf (colors neato) :blue) (q+:make-qcolor 0 0 255 255)
-        (getf (colors neato) :orange) (q+:make-qcolor 255 175 100 255)
-        (getf (colors neato) :white) (q+:make-qcolor 255 255 255 255)
-        (getf (colors neato) :black) (q+:make-qcolor 0 0 0 255)))
+    (setf (image-buffer neato) (q+:make-qimage width height (q+:qimage.format_argb32)))))
 
 (defmethod finalize ((neato neato))
-  (finalize (image-buffer neato))
-  (for:for ((color in (colors neato)))
-    (unless (eql 'keyword (type-of color))
-      (finalize color))))
+  (finalize (image-buffer neato)))
 
 (defmethod update ((neato neato))
   (incf (tick neato))
@@ -87,14 +78,15 @@
                      (q+:width rect)))
          (height (min (second (array-dimensions world))
                       (q+:height rect))))
-    (q+:fill (image-buffer neato) (getf (colors neato) :white))
-    (q+:fill (image-buffer neato) (getf (colors neato) :transparent))
+    (q+:fill (image-buffer neato) #xFF000000) ;; Black
+    (q+:fill (image-buffer neato) #x00000000) ;; Transparent
     (dotimes (x width)
       (dotimes (y height)
         (let ((element (aref world x y)))
           (when (and element (< 0 element))
-            (setf (q+:pixel (image-buffer neato) x y) (q+:rgba (case element
-                                                                 (1 (getf (colors neato) :blue))
-                                                                 (2 (getf (colors neato) :orange))
-                                                                 (T (getf (colors neato) :white)))))))))
-    (q+:draw-image target rect (image-buffer neato))))
+            (let ((color (case element
+                           (1 #xFF0000FF)    ;; Blue
+                           (2 #xFFFFFF00)    ;; Yellow
+                           (T #xFFFFFFFF)))) ;; White
+              (setf (q+:pixel (image-buffer neato) x y) color))))))
+    (q+:draw-image target 0 0 (image-buffer neato))))
